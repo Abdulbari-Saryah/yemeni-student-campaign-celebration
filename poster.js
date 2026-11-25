@@ -5,9 +5,12 @@ function createCompletionPoster(canvas, formatYuan) {
   const W = canvas.width / 2;
   const H = canvas.height / 2;
   const image = new Image();
-  image.src = "blurred-campaign.png";
+  image.src = "blurred-campaign.png?v=story-1";
+  const unionLogo = new Image();
+  unionLogo.src = "ysuc-logo.png";
   const ready = Promise.all([
     image.decode(),
+    unionLogo.decode(),
     document.fonts.load('600 30px "Noto Campaign"', "اكتمل المبلغ").catch(() => [])
   ]);
 
@@ -143,7 +146,7 @@ function createCompletionPoster(canvas, formatYuan) {
   function drawHeader(complete) {
     line(165, 238, 61, "#cda369");
     line(842, 915, 61, "#cda369");
-    write("حملة دعم الطالب اليمني في الصين", W / 2, 71, { align: "center", color: "#efd19e" });
+    write("حملة للمساهمة في سداد الدية", W / 2, 71, { align: "center", color: "#efd19e" });
     box(64, 108, 952, 405, 22, "#355444", "#c2a06a");
     context.save();
     context.clip();
@@ -197,7 +200,7 @@ function createCompletionPoster(canvas, formatYuan) {
     write("المستلم فعليًا", 953, 771, { size: 27, weight: 720, color: gold });
     write(formatYuan(received), 953, 842, { size: 65, weight: 900, numeric: true, max: 482 });
     box(439, 756, 1, 84, 0, "#658471");
-    write("هدف الحملة", 411, 771, { size: 25, color: gold });
+    write("هدف سداد الدية", 411, 771, { size: 25, color: gold });
     write(formatYuan(amounts.goal), 411, 827, { size: 39, weight: 790, numeric: true, max: 284 });
     box(128, 874, 824, 13, 6.5, "#416451");
     const bar = 824 * Math.min(1, received / amounts.goal);
@@ -255,6 +258,18 @@ function createCompletionPoster(canvas, formatYuan) {
     }));
   }
 
+  function drawSupervision() {
+    line(90, 990, 1737, "#b996636e");
+    box(866, 1752, 100, 66, 9, "#fff");
+    const scale = Math.min(88 / unionLogo.naturalWidth, 56 / unionLogo.naturalHeight);
+    const width = unionLogo.naturalWidth * scale;
+    const height = unionLogo.naturalHeight * scale;
+    context.drawImage(unionLogo, 916 - width / 2, 1785 - height / 2, width, height);
+    write("بإشراف الجالية اليمنية واتحاد الطلاب اليمنيين في الصين", 842, 1796, {
+      size: 26, weight: 680, color: "#f3dbaa", max: 730
+    });
+  }
+
   return {
     ready,
     paint(state) {
@@ -267,6 +282,7 @@ function createCompletionPoster(canvas, formatYuan) {
       drawHeader(state.complete);
       drawStatement(state);
       drawThanks();
+      drawSupervision();
     }
   };
 }
